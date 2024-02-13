@@ -1,6 +1,16 @@
 import java.util.Iterator;
 
 public class ArrayIntList implements IntList{
+    // internal (private) representation
+    private int[] buffer;
+    private int size;       // num of spots used in array
+    private final static int INITIAL_CAPACITY = 10;
+    public ArrayIntList() {
+        buffer = new int[INITIAL_CAPACITY];
+        size = 0;
+    }
+
+
 
 
     /**
@@ -13,8 +23,34 @@ public class ArrayIntList implements IntList{
     @Override
     public void addFront(int value) {
 
+        //check if full
+        if (size == buffer.length){
+            resize(2* buffer.length);
+        }
+        // open spot at index 0 where value will be saved
+        // shift everything right 1
+        for (int i = size; i >= 1; i--){
+            buffer[i] = buffer[i - 1];
+        }
+
+        // put value in position 0
+        buffer[0] = value;
+
+        size++;
     }
 
+    private void resize(int newSize){
+        // create new array of new size
+        int[] temp = new int[newSize];
+
+        //copy over the values from the existing buffer
+        for (int i = 0; i < size; i++){
+            temp[i] = buffer[i];
+        }
+
+        // make the switch over
+        buffer = temp;
+    }
     /**
      * Appends (inserts) the specified value at the back of the list (at index size()-1).
      *
@@ -22,7 +58,16 @@ public class ArrayIntList implements IntList{
      */
     @Override
     public void addBack(int value) {
+        // Check to see if we still have room (capacity)
+        if(size == buffer.length) {
+            // Create new larger array to resize and copy over values
 
+            // new size is double existing capacity
+            resize(2 * buffer.length);
+        }
+
+        buffer[size] = value;
+        size++;
     }
 
     /**
@@ -55,7 +100,7 @@ public class ArrayIntList implements IntList{
      */
     @Override
     public void removeBack() {
-
+        buffer[--size] = 0;
     }
 
     /**
@@ -69,7 +114,10 @@ public class ArrayIntList implements IntList{
      */
     @Override
     public int remove(int index) {
-        return 0;
+        if (size == 0){
+            throw new IllegalStateException("already empty");
+        }
+        return index;
     }
 
     /**
@@ -145,5 +193,22 @@ public class ArrayIntList implements IntList{
     @Override
     public Iterator<Integer> iterator() {
         return null;
+    }
+
+    @Override
+    public String toString(){
+        if (size == 0){
+            return "[]";
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+
+        for (int i = 1; i < size; i++) {
+            sb.append(", ");
+            sb.append(buffer[i]);
+            }
+
+        sb.append("]");
+        return sb.toString();
     }
 }
